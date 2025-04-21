@@ -12,13 +12,14 @@ resource "aws_codepipeline" "app_pipeline" {
     action {
       name             = "Source"
       category         = "Source"
-      owner            = "ThirdParty"
-      provider         = "GITHUB"
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["source_output"]
       configuration = {
-        RepositoryName = "POC-CI-CD-Pipeline"
-        BranchName     = "main"
+        ConnectionArn  = "arn:aws:codestar-connections:us-west-2:390402565417:connection/connection-id"
+        FullRepositoryId = "prashreddy0912/POC-CI-CD-Pipeline-"
+        BranchName       = "main"
       }
     }
   }
@@ -38,4 +39,4 @@ resource "aws_codepipeline" "app_pipeline" {
       }
     }
   }
-}
+} 
