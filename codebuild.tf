@@ -27,6 +27,6 @@ resource "aws_codebuild_project" "build" {
   source {
     type     = "GITHUB"
     location = "https://${var.github_username}:${var.github_password}@github.com/prashreddy0912/POC-CI-CD-Pipeline-.git"
-    buildspec = file("buildspec.yml")
+    buildspec = file("buildspec.yaml")
   }
 }
