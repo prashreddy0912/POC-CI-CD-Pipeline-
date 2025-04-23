@@ -11,7 +11,7 @@ phases:
       - echo Verifying Docker installation...
       - docker --version
       - echo Logging in to Amazon ECR...
-      # - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
+      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
       - REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app
       - IMAGE_TAG=latest
   build:
