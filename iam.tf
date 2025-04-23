@@ -65,6 +65,10 @@ resource "aws_iam_role_policy_attachment" "codebuild_access" {
   role       = aws_iam_role.codebuild_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess"
 }
+resource "aws_iam_role_policy_attachment" "ecr_access" {
+  role       = aws_iam_role.codebuild_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+}
 resource "aws_iam_role" "eks_node_role" {
   name = "eks-node-role"
 

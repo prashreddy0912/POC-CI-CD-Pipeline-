@@ -17,9 +17,16 @@ resource "aws_codebuild_project" "build" {
     }
   }
 
+ logs_config {
+    cloudwatch_logs {
+      status      = "ENABLED"
+      group_name  = "/aws/codebuild/${var.app_name}-build"
+      stream_name = "build-log"
+    }
+  }
   source {
     type     = "GITHUB"
-    location = "https://github.com/prashreddy0912/POC-CI-CD-Pipeline-.git"
+    location = "https://${var.github_username}:${var.github_password}@github.com/prashreddy0912/POC-CI-CD-Pipeline-.git"
     buildspec = file("buildspec.yml")
   }
 }
