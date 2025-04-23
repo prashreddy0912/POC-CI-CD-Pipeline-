@@ -17,7 +17,7 @@ resource "aws_codepipeline" "app_pipeline" {
       version          = "1"
       output_artifacts = ["source_output"]
       configuration = {
-        ConnectionArn  = "arn:aws:codestar-connections:us-west-2:390402565417:connection/connection-id"
+        ConnectionArn  = "arn:aws:codeconnections:us-west-2:390402565417:connection/a9879025-873c-4ee0-954a-8c1e87d1025b"
         FullRepositoryId = "prashreddy0912/POC-CI-CD-Pipeline-"
         BranchName       = "main"
       }
