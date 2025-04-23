@@ -4,20 +4,21 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
-      - docker login -u prashreddy0912 -p qwertyuiop
-      # - $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com) - 
+      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
       - REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app
-      # - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=latest
   build:
     commands:
       - echo Building the Docker image...
-      - docker build -t 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:main .
+      - docker build -t nodejs-eks-app .
+      # - docker build -t 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:main .
+      - docker tag nodejs-eks-app:latest 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:latest
   post_build:
     commands:
       - echo Pushing the Docker image...
-      - docker push 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:main 
+      - docker push 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:latest 
       - echo Updating Kubernetes manifests...
-      - sed -i "390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:main" k8/deployment.yaml
+      # - sed -i "390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:main" k8/deployment.yaml
       - echo Deploying to EKS...
       - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
       - kubectl apply -f k8/
