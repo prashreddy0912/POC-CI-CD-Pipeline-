@@ -28,5 +28,6 @@ phases:
 
 artifacts:
   files:
-    - k8/deployment.yaml
     - k8/service.yaml
+    - k8/configmap.yaml
+    - k8/deployment.yaml

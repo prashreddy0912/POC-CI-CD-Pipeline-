@@ -17,5 +17,3 @@ spec:
         image: 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:latest
         ports:
         - containerPort: 3000
-
-
