@@ -1,32 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: node-app
+  name: nodejs-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: node-app
+      app: nodejs-app
   template:
     metadata:
       labels:
-        app: node-app
+        app: nodejs-app
     spec:
       containers:
-      - name: node-app
+      - name: nodejs-app
         image: 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:latest
         ports:
         - containerPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: node-app-service
-spec:
-  type: LoadBalancer
-  selector:
-    app: node-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
+
+
