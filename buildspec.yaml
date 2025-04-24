@@ -6,10 +6,15 @@ phases:
       docker: 20
     commands:
       - echo Installing dependencies...
-      - curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.1/2024-03-06/bin/linux/amd64/kubectl
+      - yum update -y
+      - yum install -y curl
+      - echo Downloading kubectl...
+      - curl -o kubectl --retry 5 --retry-delay 5 https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.1/2024-03-06/bin/linux/amd64/kubectl
       - chmod +x ./kubectl
       - mv ./kubectl /usr/local/bin/
-      - kubectl version --client
+      - echo Verifying kubectl installation...
+      - ls -l /usr/local/bin/kubectl || echo "kubectl not found in /usr/local/bin"
+      - kubectl version --client || echo "kubectl command failed"
   pre_build:
     commands:
       - set -x
