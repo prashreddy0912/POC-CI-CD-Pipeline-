@@ -20,11 +20,14 @@ phases:
 
   post_build:
     commands:
-      - echo Pushing the Docker image...
-      - docker push $REPOSITORY_URI:latest
-      - echo Deploying to EKS...
-      - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
-      - kubectl apply -f k8/
+    - echo Pushing the Docker image...
+    - docker push $REPOSITORY_URI:latest
+    - echo Updating kubeconfig...
+    - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
+    - kubectl version --client
+    - kubectl get nodes
+    - echo Deploying to EKS...
+    - kubectl apply -f k8/
 
 artifacts:
   files:
