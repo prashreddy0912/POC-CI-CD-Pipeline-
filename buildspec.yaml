@@ -22,6 +22,9 @@ phases:
     commands:
     - echo Pushing the Docker image...
     - docker push $REPOSITORY_URI:latest
+    - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
+    - cat ~/.kube/config || echo "No kube config found"
+    - kubectl config get-contexts || echo "No context"
     - echo Updating kubeconfig...
     - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
     - kubectl version --client
