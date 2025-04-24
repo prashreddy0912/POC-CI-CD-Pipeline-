@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nodejs-app
+  namespace: default
 spec:
   replicas: 3
   selector:
@@ -35,7 +36,7 @@ metadata:
   namespace: default
 subjects:
   - kind: User
-    name: codebuild  # This could be a service account if applicable
+    name: arn:aws:iam::390402565417:root # This could be a service account if applicable
     apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role
