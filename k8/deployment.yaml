@@ -17,3 +17,27 @@ spec:
         image: 390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app:latest
         ports:
         - containerPort: 3000
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: view-role
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "deployments"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: view-binding
+  namespace: default
+subjects:
+  - kind: User
+    name: codebuild  # This could be a service account if applicable
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: view-role
+  apiGroup: rbac.authorization.k8s.io
