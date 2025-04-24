@@ -21,7 +21,10 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
       - REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app
-      -build:
+  
+      
+      
+  build:
     commands:
       - echo Building the Docker image...
       - docker build -t nodejs-eks-app .
@@ -40,7 +43,3 @@ artifacts:
   files:
     - k8/deployment.yaml
     - k8/service.yaml
-  
-      
-      
-  
