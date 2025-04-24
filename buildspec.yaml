@@ -27,8 +27,6 @@ phases:
     - kubectl config get-contexts || echo "No context"
     - echo Updating kubeconfig...
     - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
-    - kubectl version --client
-    - kubectl get nodes
     - echo Deploying to EKS...
     - kubectl apply -f k8/
 
