@@ -1,6 +1,14 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+    commands:
+      - echo Installing dependencies...
+      - curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.1/2024-03-06/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl
+      - mv ./kubectl /usr/local/bin/
+      - kubectl version --client
   pre_build:
     commands:
       - set -x
@@ -20,15 +28,17 @@ phases:
 
   post_build:
     commands:
-    - echo Pushing the Docker image...
-    - docker push $REPOSITORY_URI:latest
-    - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
-    - cat ~/.kube/config || echo "No kube config found"
-    - kubectl config get-contexts || echo "No context"
-    - echo Updating kubeconfig...
-    - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
-    - echo Deploying to EKS...
-    - kubectl apply -f k8/
+      - echo Pushing Docker image...
+      - docker push $REPOSITORY_URI:latest
+      - echo Updating kubeconfig...
+      - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
+      - echo Verifying kubeconfig...
+      - cat ~/.kube/config || echo "No kubeconfig found"
+      - kubectl config current-context || echo "No context"
+      - echo Testing access to cluster...
+      - kubectl get nodes || echo "Failed to get nodes"
+      - echo Applying Kubernetes manifests...
+      - kubectl apply -f k8/ || echo "Failed to apply k8 manifests"
 
 artifacts:
   files:
