@@ -3,21 +3,11 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      - unzip awscliv2.zip
-      - ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli
-      - echo Verifying AWS CLI installation...
-      - aws --version
-      # - echo Installing Docker...
-      # - curl -fsSL https://get.docker.com -o get-docker.sh
-      # - sh get-docker.sh
-      # - echo Verifying Docker installation...
-      # - docker --version
-      # - echo Installing Docker using package manager...
-      # - yum update -y
-      # - yum install -y docker
-      # - service docker start
-      # - docker --version
+      # - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      # - unzip awscliv2.zip
+      # - ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli
+      # - echo Verifying AWS CLI installation...
+      # - aws --version
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
       - REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app
