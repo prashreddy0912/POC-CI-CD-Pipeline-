@@ -62,6 +62,10 @@ resource "aws_codebuild_project" "app-build-test" {
     type     = "GITHUB"
     location = "https://github.com/prashreddy0912/POC-CI-CD-Pipeline-.git"
     buildspec = file("buildspec.yaml")
+    auth{
+      type     = "OAUTH"
+      resource = "arn:aws:codeconnections:us-west-2:390402565417:connection/5eb5566b-6524-4a41-9bc1-745a2f55f0b9"
+    }
   }
 
   environment {
