@@ -1,9 +1,6 @@
 version: 0.2
 
 phases:
-  # install:
-    # runtime-versions:
-    #   docker: 20
     commands:
       - echo Installing dependencies...
       - yum update -y
@@ -15,7 +12,7 @@ phases:
       - echo Verifying kubectl installation...
       - ls -l /usr/local/bin/kubectl || echo "kubectl not found in /usr/local/bin"
       - kubectl version --client || echo "kubectl command failed"
-  pre_build:
+pre_build:
     commands:
       - set -x
       - echo "Verifying AWS CLI and Docker"
@@ -26,13 +23,13 @@ phases:
       - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
       - REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app
 
-  build:
+build:
     commands:
       - echo Building the Docker image...
       - docker build -t nodejs-eks-app .
       - docker tag nodejs-eks-app:latest $REPOSITORY_URI:latest
 
-  post_build:
+post_build:
     commands:
       - echo Pushing Docker image...
       - docker push $REPOSITORY_URI:latest
