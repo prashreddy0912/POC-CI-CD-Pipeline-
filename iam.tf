@@ -49,7 +49,7 @@ resource "aws_iam_role" "codebuild_role" {
       {
         Effect = "Allow",
         Principal = {
-          Service = "codepipeline.amazonaws.com"
+          Service = "codebuild.amazonaws.com"
         },
         Action = "sts:AssumeRole"
       }
