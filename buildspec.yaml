@@ -1,58 +1,22 @@
-version: 0.2
-
 phases:
-  install:
-    commands:
-      - echo Installing dependencies...
-      - yum update -y
-      - yum install -y curl
-      - echo Downloading kubectl...
-      - curl -o kubectl --retry 5 --retry-delay 5 https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.1/2024-03-06/bin/linux/amd64/kubectl
-      - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin/
-      - echo Verifying kubectl installation...
-      - ls -l /usr/local/bin/kubectl || echo "kubectl not found in /usr/local/bin"
-      - kubectl version --client || echo "kubectl command failed"
+pre_build:
+commands:
+- set -x
+- echo "Verifying AWS CLI and Docker"
+- aws --version
+- docker --version
+- aws sts get-caller-identity
+- echo Logging in to Amazon ECR...
+- aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
+- REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/my-app-task
 
-  pre_build:
-    commands:
-      - set -x
-      - echo "Verifying AWS CLI and Docker"
-      - aws --version
-      - docker --version
-      - aws sts get-caller-identity
-      - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
-      - REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/nodejs-eks-app
+build:
+commands:
+- echo Building the Docker image...
+- docker build -t my-app-task .
+- docker tag my-app-task:latest $REPOSITORY_URI:latest
 
-  build:
-    commands:
-      - echo Building the Docker image...
-      - docker build -t nodejs-eks-app .
-      - docker tag nodejs-eks-app:latest $REPOSITORY_URI:latest
-
-  post_build:
-    commands:
-      - echo Pushing Docker image...
-      - docker push $REPOSITORY_URI:latest
-      - echo Updating kubeconfig...
-      - aws eks update-kubeconfig --region us-west-2 --name nodejs-eks-app
-      - echo Verifying kubeconfig...
-      - cat ~/.kube/config || echo "No kubeconfig found"
-      - kubectl config current-context || echo "No context"
-      - echo Testing access to cluster...
-      - kubectl get nodes || echo "Failed to get nodes"
-      - echo Applying Kubernetes manifests...
-      - kubectl apply -f k8/ || echo "Failed to apply k8 manifests"
-      - echo Verifying deployments...
-      - kubectl get deployments || echo "No deployments found"
-      - echo Verifying pods...
-      - kubectl get pods || echo "No pods found"
-      - echo Describing deployment...
-      - kubectl describe deployment nodejs-app || echo "Failed to describe deployment"
-
-artifacts:
-  files:
-    - k8/service.yaml
-    - k8/configmap.yaml
-    - k8/deployment.yaml
+post_build:
+commands:
+- echo Pushing Docker image...
+- docker push $REPOSITORY_URI:latest
