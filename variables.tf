@@ -12,8 +12,3 @@ variable "github_username" {
 variable "github_password" {
   default = "Prashruchi@67"
 }
-
-variable "github_oauth_token" {
-  description = "GitHub OAuth token for CodePipeline"
-  type        = string
-  sensitive   = true
