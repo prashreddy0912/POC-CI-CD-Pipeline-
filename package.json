@@ -1,7 +1,7 @@
 {
-    "name": "nodejs-eks-app",
+    "name": "nodejs-ecs-app",
     "version": "1.0.0",
-    "description": "Sample NodeJS app deployed via EKS CI/CD",
+    "description": "Sample NodeJS app deployed via ECS CI/CD",
     "main": "app.js",
     "scripts": {
       "start": "node app.js"

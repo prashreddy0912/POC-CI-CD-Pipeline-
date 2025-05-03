@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "pipeline_artifacts" {
-  bucket = "${var.app_name}-pipeline-artifacts"
+  bucket = "${var.app_name}-artifacts"
 
   versioning {
     enabled = true

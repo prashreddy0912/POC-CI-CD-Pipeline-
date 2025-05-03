@@ -1,9 +1,9 @@
 variable "aws_region" {
-  default = "us-west-2"
+  default = "us-east-1"
 }
 
 variable "app_name" {
-  default = "nodejs-eks-app"
+  default = "nodejs-ecs-app"
 }
 variable "github_username" {
   default = "prashreddy0912"

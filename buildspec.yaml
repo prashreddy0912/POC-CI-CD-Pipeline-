@@ -7,8 +7,8 @@ commands:
 - docker --version
 - aws sts get-caller-identity
 - echo Logging in to Amazon ECR...
-- aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-west-2.amazonaws.com
-- REPOSITORY_URI=390402565417.dkr.ecr.us-west-2.amazonaws.com/my-app-task
+- aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-east-1.amazonaws.com
+- REPOSITORY_URI=390402565417.dkr.ecr.us-east-1.amazonaws.com/my-app-task
 
 build:
 commands:
