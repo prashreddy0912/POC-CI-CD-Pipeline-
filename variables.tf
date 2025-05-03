@@ -2,13 +2,15 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "app_name" {
-  default = "nodejs-ecs-app"
-}
-variable "github_username" {
-  default = "prashreddy0912"
+variable "s3_bucket_name" {
+  description = "S3 bucket for storing CodePipeline artifacts"
+  type        = string
+  default     = "nodejs-ecs-app-artifacts"
 }
 
-variable "github_password" {
-  default = "Prashruchi@67"
+variable "github_oauth_token" {
+  description = "GitHub personal access token with repo access"
+  type        = string
+  sensitive   = true
+  default     = "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"
 }
