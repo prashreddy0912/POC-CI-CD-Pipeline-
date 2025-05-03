@@ -1,22 +1,30 @@
+version: 0.2
+
 phases:
-pre_build:
-commands:
-- set -x
-- echo "Verifying AWS CLI and Docker"
-- aws --version
-- docker --version
-- aws sts get-caller-identity
-- echo Logging in to Amazon ECR...
-- aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-east-1.amazonaws.com
-- REPOSITORY_URI=390402565417.dkr.ecr.us-east-1.amazonaws.com/my-app-task
+  pre_build:
+    commands:
+      - set -x
+      - echo "Verifying AWS CLI and Docker"
+      - aws --version
+      - docker --version
+      - aws sts get-caller-identity
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 390402565417.dkr.ecr.us-east-1.amazonaws.com
+      - REPOSITORY_URI=390402565417.dkr.ecr.us-east-1.amazonaws.com/my-app-task
 
-build:
-commands:
-- echo Building the Docker image...
-- docker build -t my-app-task .
-- docker tag my-app-task:latest $REPOSITORY_URI:latest
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t my-app-task .
+      - docker tag my-app-task:latest $REPOSITORY_URI:latest
 
-post_build:
-commands:
-- echo Pushing Docker image...
-- docker push $REPOSITORY_URI:latest
+  post_build:
+    commands:
+      - echo Pushing Docker image...
+      - docker push $REPOSITORY_URI:latest
+      - echo Writing image definitions file...
+      - echo '[{"name":"my-app-task","imageUri":"'$REPOSITORY_URI:latest'"}]' > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json

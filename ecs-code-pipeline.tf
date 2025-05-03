@@ -6,12 +6,24 @@
 variable "region"              { default = "us-east-1" }
 variable "s3_bucket"           { default = "nodejs-ecs-app-artifacts" }
 variable "github_owner"        { default = "prashreddy0912" }
-variable "github_repo"         { default = "POC-CI-CD-Pipeline-" }  # Modified: Removed URL format
+variable "github_repo"         { default = "POC-CI-CD-Pipeline-" }
 variable "github_branch"       { default = "main" }
 variable "github_oauth_token"  { sensitive = true }
 variable "ecr_repo_name"       { default = "my-app-task" }
 variable "ecs_cluster"         { default = "node-ecs-cluster" }
 variable "ecs_service"         { default = "ecs-test"}
+
+#---------------------------
+# ECR Repository
+#---------------------------
+resource "aws_ecr_repository" "app_repo" {
+  name                 = var.ecr_repo_name
+  image_tag_mutability = "MUTABLE"
+  
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
 
 #---------------------------
 # S3 Bucket for Artifacts
@@ -56,6 +68,34 @@ resource "aws_iam_role_policy_attachment" "codebuild_ecr" {
 resource "aws_iam_role_policy_attachment" "codebuild_ecs" {
   role       = aws_iam_role.codebuild_role_test.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+}
+
+# Add specific permissions for CodeBuild to access S3
+resource "aws_iam_policy" "codebuild_s3" {
+  name        = "codebuild-s3-policy"
+  description = "Policy for CodeBuild to access S3"
+  
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      Resource = [
+        aws_s3_bucket.codepipeline_bucket.arn,
+        "${aws_s3_bucket.codepipeline_bucket.arn}/*"
+      ]
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "codebuild_s3" {
+  role       = aws_iam_role.codebuild_role_test.name
+  policy_arn = aws_iam_policy.codebuild_s3.arn
 }
 
 resource "aws_iam_role" "pipeline_role" {
@@ -108,7 +148,7 @@ resource "aws_iam_role_policy_attachment" "codestar_access" {
 }
 
 #---------------------------
-# CodeBuild Project
+# CodeBuild Project for Docker Build & Push
 #---------------------------
 resource "aws_codebuild_project" "build_app" {
   name         = "ecs-app-build"
@@ -127,12 +167,27 @@ resource "aws_codebuild_project" "build_app" {
     compute_type    = "BUILD_GENERAL1_SMALL"
     image           = "aws/codebuild/standard:5.0"
     type            = "LINUX_CONTAINER"
-    privileged_mode = true  # Added: needed for Docker operations
+    privileged_mode = true  # Required for Docker operations
+    
+    environment_variable {
+      name  = "ECR_REPOSITORY_URI"
+      value = "${aws_ecr_repository.app_repo.repository_url}"
+    }
+    
+    environment_variable {
+      name  = "AWS_DEFAULT_REGION"
+      value = var.region
+    }
+    
+    environment_variable {
+      name  = "CONTAINER_NAME"
+      value = var.ecr_repo_name
+    }
   }
 }
 
 #---------------------------
-# CodePipeline with GitHub Source
+# CodePipeline with GitHub Source, Docker build and ECS Deploy
 #---------------------------
 resource "aws_codepipeline" "ecs_pipeline" {
   name     = "ecs-github-pipeline"
@@ -146,10 +201,10 @@ resource "aws_codepipeline" "ecs_pipeline" {
   stage {
     name = "Source"
     action {
-      name             = "Source"  # Changed: renamed from github-connection
+      name             = "Source"
       category         = "Source"
       owner            = "AWS"
-      provider         = "CodeStarSourceConnection"  # Changed: from Github to CodeStarSourceConnection
+      provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["source_output"]
       configuration = {
@@ -164,14 +219,14 @@ resource "aws_codepipeline" "ecs_pipeline" {
     name = "Build"
     action {
       version          = "1"
-      name             = "Build"
+      name             = "BuildAndPushToECR"
       category         = "Build"
       owner            = "AWS"
       provider         = "CodeBuild"
       input_artifacts  = ["source_output"]
       output_artifacts = ["build_output"]
       configuration = {
-        ProjectName = aws_codebuild_project.build_app.name  # Added: CodeBuild project reference
+        ProjectName = aws_codebuild_project.build_app.name
       }
     }
   }
