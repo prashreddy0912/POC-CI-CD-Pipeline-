@@ -3,7 +3,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('Hello from NodeJS App running on ECS!');
+  res.send('Hello from NodeJS App running on ECS');
 });
 
 app.listen(port, () => {
