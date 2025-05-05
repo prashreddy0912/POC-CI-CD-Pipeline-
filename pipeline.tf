@@ -214,7 +214,7 @@ resource "aws_ecs_service" "my-app-test" {
   launch_type     = "FARGATE"
 
 network_configuration {
-  subnets          = module.vpc.private_subnets
+  subnets          = module.vpc.public_subnets
   assign_public_ip = true
   security_groups  = [aws_security_group.ecs_service_sg.id]
 }
